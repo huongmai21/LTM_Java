@@ -12,10 +12,51 @@ d. Đóng socket và kết thúc chương trình
 */
 package UDP;
 
+import java.io.IOException;
+import java.math.BigInteger;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
 /**
  *
  * @author OS
  */
 public class UDPClient_0NS62APY {
-    
+    public static void main(String[] args) throws SocketException, UnknownHostException, IOException {
+        DatagramSocket socket = new DatagramSocket();
+        InetAddress host = InetAddress.getByName("203.162.10.109");
+        int port = 2207;
+        
+        String request = ";B22DCCN424;0NS62APY";
+        byte[] sendReq = request.getBytes();
+        DatagramPacket reqPacket = new DatagramPacket(sendReq, sendReq.length, host, port);
+        socket.send(reqPacket);
+        
+        //Nhân dl
+        byte[] buf = new byte[4096];
+        DatagramPacket receivePacket = new DatagramPacket(buf, buf.length);
+        socket.receive(receivePacket);
+        
+        String data = new String(receivePacket.getData(), 0, receivePacket.getLength()).trim();
+        System.out.println("Nhận: "+data);
+        String[] part = data.split(";");
+        String reqId = part[0];
+        BigInteger a = new BigInteger(part[1]);
+        BigInteger b = new BigInteger(part[2]);
+        
+        BigInteger sum = a.add(b);
+        BigInteger diff = a.subtract(b);
+        
+        String res = reqId +";" + sum + "," +diff;
+        System.out.println("Kq: " + res);
+        byte[] outData = res.getBytes();
+        
+        DatagramPacket outPacket = new DatagramPacket(outData, outData.length, host, port);
+        socket.send(outPacket);
+        
+        socket.close();
+    }
 }

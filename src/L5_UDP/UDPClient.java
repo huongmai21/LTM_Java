@@ -6,15 +6,17 @@ package L5_UDP;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
 
 /**
  *
  * @author OS
  */
 public class UDPClient {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SocketException {
         //1. gửi chuỗi lên server
-        DatagramSocket client = new DatagramSocketocket();
+        DatagramSocket client = new DatagramSocket();
         byte[] data = "ptit client xyz udp".getBytes();
         DatagramPacket dpSend = new DatagramPacket(data, data.length, InetAddress.getByName(), 0);
         client.send(dpsend);

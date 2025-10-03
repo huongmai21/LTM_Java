@@ -11,10 +11,50 @@ d. Đóng socket và kết thúc chương trình
 */
 package UDP;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Collections;
+
 /**
  *
  * @author OS
  */
 public class UDPClient_CXrX8JvH {
-    
+    public static void main(String[] args) throws SocketException, UnknownHostException, IOException {
+        DatagramSocket socket = new DatagramSocket();
+        InetAddress host = InetAddress.getByName("203.162.10.109");
+        int port = 2208;
+        
+        String request = ";B22DCCN424;CXrX8JvH";
+        byte[] sendReq = request.getBytes();
+        DatagramPacket reqPacket = new DatagramPacket(sendReq, sendReq.length, host, port);
+        socket.send(reqPacket);
+        
+        // Nhận dl
+        byte[] buf = new byte[4096];
+        DatagramPacket receivePacket = new DatagramPacket(buf, buf.length);
+        socket.receive(receivePacket);
+        
+        String data = new String(receivePacket.getData(), 0, receivePacket.getLength());
+        System.out.println("Nhận: "+ data);
+        String[] part = data.split(";");
+        String reqId = part[0];
+        String[] s = part[1].split("\\s+");
+        
+        Arrays.sort(s, Collections.reverseOrder());
+        String res = reqId + ";" + String.join(",",s);
+        System.out.println("KQ: " + res);
+        byte[] outData = res.getBytes();
+        DatagramPacket outPacket = new DatagramPacket(outData, outData.length, host, port);
+        socket.send(outPacket);
+        
+        socket.close();
+        
+        
+    }
 }

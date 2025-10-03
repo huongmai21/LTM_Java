@@ -9,10 +9,58 @@ d.	Đóng socket và kết thúc chương trình
 */
 package UDP;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
 /**
  *
  * @author OS
  */
 public class UDPClient_xD5pkfv3 {
-    
+    public static void main(String[] args) throws SocketException, UnknownHostException, IOException {
+        //Tạo socket
+        DatagramSocket socket = new DatagramSocket();
+        InetAddress host = InetAddress.getByName("203.162.10.109");
+        int port = 2207;
+        
+        // gửi request
+        String request = ";B22DCCN424;xD5pkfv3";
+        byte[] sendReq = request.getBytes();
+        DatagramPacket sendPacket = new DatagramPacket(sendReq, sendReq.length, host, port);
+        socket.send(sendPacket);
+        
+        //Nhận dl
+        byte[] buf = new byte[4096];
+        DatagramPacket receivePacket = new DatagramPacket(buf, buf.length);
+        socket.receive(receivePacket);
+        
+        String data = new String(receivePacket.getData(), 0, receivePacket.getLength());
+        System.out.println("Nhận: "+ data);
+        
+        //Xử lý
+        String[] part = data.split(";");
+        String reqId = part[0];
+        String[] nums = part[1].split("\\,");
+        
+        int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
+        for(String x : nums){
+            int n = Integer.parseInt(x);
+            if(n < min) min = n;
+            if(n>max) max = n;
+        }
+        
+        String res = reqId+ ";" + max + "," + min;
+        
+        // Gửi kq
+        byte[] outData = res.getBytes();
+        DatagramPacket outPacket = new DatagramPacket(outData, outData.length, host, port);
+        System.out.println("Kết quả: " + res);
+        socket.send(outPacket);
+        
+        socket.close();
+    }
 }
